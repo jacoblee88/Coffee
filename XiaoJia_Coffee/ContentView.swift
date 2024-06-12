@@ -8,14 +8,35 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var orderDataSource = OrderDataSource()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack{
+            VStack{
+                List {
+                    ForEach(orderDataSource.orders) { order in
+                        if !order.isCompleted {
+                            ListItemView(order: order)
+                                .environmentObject(orderDataSource)
+                        }
+                    }
+                    .onDelete(perform: { indexSet in
+                        orderDataSource.removeOrder(at: indexSet)
+                    })
+                }
+                
+            }
+            .navigationBarTitle("Xiaojia")
+            .toolbar(content: {
+                NavigationLink {
+                    NewOrderView()
+                        .environmentObject(orderDataSource)
+                } label: {
+                    Text("New Order")
+                }
+            })
         }
-        .padding()
     }
 }
 
